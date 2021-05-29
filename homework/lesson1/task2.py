@@ -11,10 +11,8 @@ def print_string_bytes_info(string: str):
     :return:
     """
     string_bytes = bytes(string, 'raw_unicode_escape')
-    print(f'{"*" * 69}\r\n'
-          f'* Строковое значение: "{string}"\r\n'
-          f'* В байтах: {string_bytes}, тип: "{type(string_bytes)}", длина: {len(string_bytes)}\r\n'
-          f'{"*" * 69}\r\n')
+    print(f'* Строка {string}\r\n'
+          f'\t- в байтах: {string_bytes}\r\n\t- тип: {type(string_bytes)}\r\n\t- длина: {len(string_bytes)}\r\n')
 
 
 def main():
