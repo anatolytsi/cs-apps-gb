@@ -11,7 +11,7 @@ def print_string_bytes_info(string: str):
     :return:
     """
     string_bytes = bytes(string, 'raw_unicode_escape')
-    print(f'* Строка {string}\r\n'
+    print(f'* Строка "{string}"\r\n'
           f'\t- в байтах: {string_bytes}\r\n\t- тип: {type(string_bytes)}\r\n\t- длина: {len(string_bytes)}\r\n')
 
 

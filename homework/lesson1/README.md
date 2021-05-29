@@ -49,7 +49,7 @@ print_string_bytes_info('class')
 ```
 Вывод в консоли:
 ```python
-* Строка class
+* Строка "class"
 	- в байтах: b'class'
 	- тип: <class 'bytes'>
 	- длина: 5
@@ -61,7 +61,7 @@ print_string_bytes_info('function')
 ```
 Вывод в консоли:
 ```python
-* Строка method
+* Строка "method"
 	- в байтах: b'method'
 	- тип: <class 'bytes'>
 	- длина: 6
@@ -74,7 +74,7 @@ print_string_bytes_info('method')
 
 Вывод в консоли:
 ```python
-* Строка method
+* Строка "method"
 	- в байтах: b'method'
 	- тип: <class 'bytes'>
 	- длина: 6
