@@ -1,0 +1,6 @@
+orders:
+- buyer: Человек Человекович
+  date: 1622383062.1543055
+  item: Пальто
+  price: 20000
+  quantity: 1
