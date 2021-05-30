@@ -40,6 +40,8 @@ def get_data() -> list:
     for file in files:
         with open(file if '.txt' in file else f'{file}.txt') as f:
             content = f.read()
+
+        # Используется библиотека regex тк lookbehind в re библиотеке не допускает мэтчей неизвестной длины
         os_prod = regex.search(r'(?<=(Изготовитель ОС:).*[ \t]\b).*', content).captures()[0]
         os_name = regex.search(r'(?<=(Название ОС:).*[ \t]\b).*', content).captures()[0]
         os_code = regex.search(r'(?<=(Код продукта:).*[ \t]\b).*', content).captures()[0]
@@ -49,7 +51,7 @@ def get_data() -> list:
 
 
 def main():
-    write_to_csv('../test1')
+    write_to_csv('test')
 
 
 if __name__ == '__main__':
