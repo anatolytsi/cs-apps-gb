@@ -9,7 +9,12 @@ orders.json. При записи данных указать величину о
 b. Проверить работу программы через вызов функции write_order_to_json() с передачей в нее значений каждого параметра.
 """
 import json
+import os
 import time
+
+from homework.common.task_printer import print_task
+
+CURRENT_DIR = os.path.dirname(__file__)
 
 ORDERS_JSON = 'orders.json'
 
@@ -25,16 +30,17 @@ def write_order_to_json(item: str, quantity: int, price: float, buyer: str, date
     :param date: время заказа
     """
     data = []
-    with open(ORDERS_JSON) as f:
+    filepath = f'{CURRENT_DIR}\\{ORDERS_JSON}'
+    with open(filepath) as f:
         data = json.load(f)
         data['orders'].append({'item': item, 'quantity': quantity, 'price': price, 'buyer': buyer, 'date': date})
 
-    with open(ORDERS_JSON, 'w') as f:
+    with open(filepath, 'w') as f:
         f.write(json.dumps(data, indent=4))
 
 
 def main():
-    print(f'{"=" * 69}\r\n{"=" * 29} Задание 2 {"=" * 29}\r\n{"=" * 69}\r\n')
+    print_task(2)
     write_order_to_json('Пальто', 1, 20000, 'Человек Человекович', time.time())
 
 

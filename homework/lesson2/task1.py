@@ -15,8 +15,13 @@ b. Создать функцию write_to_csv(), в которую переда�
 
 c.Проверить работу программы через вызов функции write_to_csv().
 """
+import os
 import regex
 import csv
+
+from homework.common.task_printer import print_task
+
+CURRENT_DIR = os.path.dirname(__file__)
 
 files = ['info_1.txt', 'info_2.txt', 'info_3.txt']
 
@@ -26,7 +31,8 @@ def write_to_csv(csv_path: str):
     Открывает/создает файл по указанному пути и записывает туда данные, полученные функцией get_data()
     :param csv_path: путь к csv файлу
     """
-    with open(csv_path if '.csv' in csv_path else f'{csv_path}.csv', 'w', newline='\n', encoding='utf-16') as f:
+    filepath = f'{CURRENT_DIR}\\{csv_path if ".csv" in csv_path else f"{csv_path}.csv"}'
+    with open(filepath, 'w', newline='\n', encoding='utf-16') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(get_data())
 
@@ -38,7 +44,8 @@ def get_data() -> list:
     main_data = [['Изготовитель системы', 'Название ОС', 'Код продукта', 'Тип системы']]
 
     for file in files:
-        with open(file if '.txt' in file else f'{file}.txt') as f:
+        filepath = f'{CURRENT_DIR}\\{file if ".txt" in file else f"{file}.txt"}'
+        with open(filepath) as f:
             content = f.read()
 
         # Используется библиотека regex тк lookbehind в re библиотеке не допускает мэтчей неизвестной длины
@@ -51,6 +58,7 @@ def get_data() -> list:
 
 
 def main():
+    print_task(1)
     write_to_csv('test')
 
 
