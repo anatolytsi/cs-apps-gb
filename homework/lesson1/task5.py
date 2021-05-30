@@ -4,6 +4,8 @@
 """
 import subprocess
 
+from homework.common.task_printer import print_task
+
 
 def ping_website(url: str):
     """
@@ -19,7 +21,7 @@ def ping_website(url: str):
 
 
 def main():
-    print(f'{"=" * 69}\r\n{"=" * 29} Задание 5 {"=" * 29}\r\n{"=" * 69}\r\n')
+    print_task(5)
     ping_website('yandex.ru')
     ping_website('youtube.com')
 

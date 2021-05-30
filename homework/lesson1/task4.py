@@ -2,6 +2,7 @@
 Преобразовать слова «разработка», «администрирование», «protocol», «standard» из строкового представления в байтовое и
 выполнить обратное преобразование (используя методы encode и decode).
 """
+from homework.common.task_printer import print_task
 
 
 def encode_decode_string(string: str):
@@ -15,7 +16,7 @@ def encode_decode_string(string: str):
 
 
 def main():
-    print(f'{"=" * 69}\r\n{"=" * 29} Задание 4 {"=" * 29}\r\n{"=" * 69}\r\n')
+    print_task(4)
     encode_decode_string('разработка')
     encode_decode_string('администрирование')
     encode_decode_string('protocol')

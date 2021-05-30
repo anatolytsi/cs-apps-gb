@@ -2,6 +2,7 @@
 Каждое из слов «class», «function», «method» записать в байтовом типе без преобразования в последовательность кодов
 (не используя методы encode и decode) и определить тип, содержимое и длину соответствующих переменных.
 """
+from homework.common.task_printer import print_task
 
 
 def print_string_bytes_info(string: str):
@@ -16,7 +17,7 @@ def print_string_bytes_info(string: str):
 
 
 def main():
-    print(f'{"=" * 69}\r\n{"=" * 29} Задание 2 {"=" * 29}\r\n{"=" * 69}\r\n')
+    print_task(2)
     print_string_bytes_info('class')
     print_string_bytes_info('function')
     print_string_bytes_info('method')

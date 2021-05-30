@@ -2,6 +2,7 @@
 Создать текстовый файл test_file.txt, заполнить его тремя строками: «сетевое программирование», «сокет», «декоратор».
 Проверить кодировку файла по умолчанию. Принудительно открыть файл в формате Unicode и вывести его содержимое.
 """
+from homework.common.task_printer import print_task
 
 
 def write_to_file(filename: str, data: list):
@@ -35,7 +36,7 @@ def read_file_in_utf8(filename: str):
 
 
 def main():
-    print(f'{"=" * 69}\r\n{"=" * 29} Задание 6 {"=" * 29}\r\n{"=" * 69}\r\n')
+    print_task(6)
     write_to_file('test_file.txt', ['сетевое программирование', 'сокет', 'декоратор'])
     read_file_in_utf8('test_file.txt')
 
