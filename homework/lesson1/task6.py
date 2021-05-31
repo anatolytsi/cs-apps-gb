@@ -26,7 +26,7 @@ def read_file_in_utf8(filename: str):
     data = []
     print(f'* Читаем файл {filename}...')
     try:
-        with open(filename, encoding='utf-8') as file:
+        with open(filename, encoding='utf-8', errors='replace') as file:
             print(f'\t- Кодировка открытого файла: {file.encoding}')
             for line in file:
                 data.append(line)
