@@ -97,15 +97,20 @@ def leave_room(server: socket, username: str, room: str):
 
 def connect_client(addr: str, port: int = 7777) -> socket:
     port = port if port else 7777
-    server = None
+    addr = '127.0.0.1' if addr == 'localhost' else addr
+    server = socket(AF_INET, SOCK_STREAM)
     try:
-        if addr:
-            addr = '127.0.0.1' if addr == 'localhost' else addr
-            inet_aton(addr)
-        server = socket(AF_INET, SOCK_STREAM)
-        server.connect((addr, port))
+        server.connect((addr, int(port)))
         print(f'[{time.strftime("%H:%M:%S")}] Клиент подключился к {addr}:{port}')
-    except error:
+    except ConnectionRefusedError:
+        server = None
+        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Сервер {addr}:{port} отклонил подключение, проверьте порт или '
+              f'сервер для подключения')
+    except TimeoutError:
+        server = None
+        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Превышено время ожидания ответа от {addr}:{port}')
+    except gaierror:
+        server = None
         print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
               f'проверьте правильность введенного адреса')
     return server
@@ -133,13 +138,14 @@ def main():
 
     # По хорошему я бы сделал все это в классе и не нужно было бы каждый раз передавать в метод сервер (сокет)
     server = connect_client(args['address'], args['port'])
-    authenticate_client(server, username, 'password')
-    send_presence(server, username)
-    join_room(server, username, '#geekbrains')
-    send_msg(server, username, '#geekbrains', 'Всем привет в этом чатике!')
-    send_msg(server, username, '#geekbrains', 'Ну и больно надо...')
-    leave_room(server, username, '#geekbrains')
-    disconnect_client(server)
+    if server:
+        authenticate_client(server, username, 'password')
+        send_presence(server, username)
+        join_room(server, username, '#geekbrains')
+        send_msg(server, username, '#geekbrains', 'Всем привет в этом чатике!')
+        send_msg(server, username, '#geekbrains', 'Ну и больно надо...')
+        leave_room(server, username, '#geekbrains')
+        disconnect_client(server)
 
 
 if __name__ == '__main__':

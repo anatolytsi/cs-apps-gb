@@ -115,16 +115,14 @@ def message_dispatcher(msg: dict) -> dict:
 def server_listen(addr: str = '', port: int = 7777):
     addr = addr if addr else ''
     port = port if port else 7777
-    if addr:
-        addr = '127.0.0.1' if addr == 'localhost' else addr
-        try:
-            inet_aton(addr)
-        except error:
-            print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
-                  f'проверьте правильность введенного адреса')
-            return
+    addr = '127.0.0.1' if addr == 'localhost' else addr
     s = socket(AF_INET, SOCK_STREAM)
-    s.bind((addr, int(port)))
+    try:
+        s.bind((addr, int(port)))
+    except gaierror:
+        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
+              f'проверьте правильность введенного адреса')
+        return
     s.listen(5)
     s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     print(f'[{time.strftime("%H:%M:%S")}] Сервер запущен по адресу {addr}:{port}')
