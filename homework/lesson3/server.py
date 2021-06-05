@@ -1,29 +1,22 @@
 """
+Простой сервер на питоне
 
+Функции клиента:
+* сформировать presence-сообщение;
+* отправить сообщение серверу;
+* получить ответ сервера;
+* разобрать сообщение сервера;
+* параметры командной строки скрипта `client.py <addr> [<port>]`:
+    - addr — ip-адрес сервера;
+    - port — tcp-порт на сервере, по умолчанию 7777.
 """
 import argparse
 import pickle
+import time
 from socket import *
 
 online_users = []
 chats = {}
-
-
-def func():
-    s = socket(AF_INET, SOCK_STREAM)
-    s.bind(('', 8887))
-    s.listen(5)
-    s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-
-    while True:
-        client, addr = s.accept()
-        data = client.recv(1024)
-        response = {
-            "response": 200,
-            "alert": "Unnecessary message/notification"
-        }
-        client.send(pickle.dumps(response))
-        client.close()
 
 
 def send_msg(client: socket, response: dict):
@@ -90,7 +83,8 @@ def message_dispatcher(msg: dict) -> dict:
                             response_is_error = False
                         else:
                             response_code = 403
-                            response_text = f'Пользователь {msg["user"]["account_name"]} не состоит в чате {msg["room"]}'
+                            response_text = f'Пользователь {msg["user"]["account_name"]} не состоит в чате ' \
+                                            f'{msg["room"]}'
                             response_is_error = True
                     else:
                         response_code = 400
@@ -111,7 +105,9 @@ def message_dispatcher(msg: dict) -> dict:
 
     response = {}
     if response_code:
-        print(f'Сервер отвечает: {response_code} {"Ошибка! " if response_is_error else ""}{response_text}')
+        print(
+            f'[{time.strftime("%H:%M:%S")}] Сервер отвечает: {response_code} '
+            f'{"Ошибка! " if response_is_error else ""}{response_text}')
         response = {'response': response_code, 'error' if response_is_error else 'alert': response_text}
     return response
 
@@ -119,26 +115,35 @@ def message_dispatcher(msg: dict) -> dict:
 def server_listen(addr: str = '', port: int = 7777):
     addr = addr if addr else ''
     port = port if port else 7777
-    try:
-        if addr:
-            addr = '127.0.0.1' if addr == 'localhost' else addr
+    if addr:
+        addr = '127.0.0.1' if addr == 'localhost' else addr
+        try:
             inet_aton(addr)
-        s = socket(AF_INET, SOCK_STREAM)
-        s.bind((addr, int(port)))
-        s.listen(5)
-        s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        print(f'Сервер запущен по адресу {addr}:{port}')
+        except error:
+            print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
+                  f'проверьте правильность введенного адреса')
+            return
+    s = socket(AF_INET, SOCK_STREAM)
+    s.bind((addr, int(port)))
+    s.listen(5)
+    s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+    print(f'[{time.strftime("%H:%M:%S")}] Сервер запущен по адресу {addr}:{port}')
+    while True:
+        client, addr = s.accept()
         while True:
-            client, addr = s.accept()
-            data = client.recv(1024)
-            response = message_dispatcher(pickle.loads(data))
-            send_msg(client, response)
-            client.close()
-    except error:
-        print(f'Ошибка! Неправильный IP адрес {addr}:{port}, проверьте правильность введенного адреса')
+            try:
+                data = client.recv(1024)
+                response = message_dispatcher(pickle.loads(data))
+                send_msg(client, response)
+            except EOFError:
+                break
+            except ConnectionResetError:
+                # Клиент вышел сам
+                break
+        client.close()
 
 
-def main():
+def get_args() -> dict:
     parser = argparse.ArgumentParser(description='Простой сервер на Python')
     parser.add_argument('-a', '--address',
                         help='IP адрес сервера, по умолчанию слушает все доступные адреса',
@@ -146,7 +151,11 @@ def main():
     parser.add_argument('-p', '--port',
                         help='Порт сервера, по умолчанию использует 7777',
                         required=False)
-    args = vars(parser.parse_args())
+    return vars(parser.parse_args())
+
+
+def main():
+    args = get_args()
     server_listen(args['address'], args['port'])
 
 
