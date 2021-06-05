@@ -1,11 +1,11 @@
 # Client-Server Applications GeekBrains course
 <style>
-    ol.lesson {
+    ol {
       list-style-type: none;
       counter-reset: elementcounter;
       padding-left: 0;
     }    
-    li.lesson:before {
+    li:before {
       content: "Урок " counter(elementcounter) ". ";
       counter-increment: elementcounter;
     }
