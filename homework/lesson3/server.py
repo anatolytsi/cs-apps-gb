@@ -76,8 +76,8 @@ def message_dispatcher(msg: dict) -> dict:
                 response_code = 400
                 response_text = f'Отправитель или адресат неопределенны'
                 response_is_error = True
-                if 'from' in msg:
-                    if 'to' in msg:
+                if 'from' in msg and msg['from']:
+                    if 'to' in msg and msg['to']:
                         # TODO проверку на существование пользователей
                         response_code = 200
                         response_text = f'Сообщение от {msg["from"]} к {msg["to"]} доставлено'
