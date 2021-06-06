@@ -3,7 +3,7 @@
 соответствующих переменных. Затем с помощью онлайн-конвертера преобразовать строковые представление в формат Unicode и
 также проверить тип и содержимое переменных.
 """
-from homework.common.task_printer import print_task
+from homework.common.printer import print_task
 
 
 def compare_string_with_unicode(string_format: str, unicode_format: str):

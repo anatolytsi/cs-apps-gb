@@ -4,7 +4,7 @@
 """
 import subprocess
 
-from homework.common.task_printer import print_task
+from homework.common.printer import print_task
 
 
 def ping_website(url: str):

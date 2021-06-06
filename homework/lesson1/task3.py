@@ -1,7 +1,7 @@
 """
 Определить, какие из слов «attribute», «класс», «функция», «type» невозможно записать в байтовом типе.
 """
-from homework.common.task_printer import print_task
+from homework.common.printer import print_task
 
 
 def assert_string_to_bytes(string: str):

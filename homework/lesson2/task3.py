@@ -15,7 +15,7 @@ import json
 import os
 import yaml
 
-from homework.common.task_printer import print_task
+from homework.common.printer import print_task
 
 CURRENT_DIR = os.path.dirname(__file__)
 
