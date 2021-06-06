@@ -11,11 +11,17 @@ b. Реализовать сохранение данных в файл форм
 
 c. Реализовать считывание данных из созданного файла и проверить, совпадают ли они с исходными.
 """
-import json
 import os
+import sys
+import json
 import yaml
 
-from homework.common.printer import print_task
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+
+from common.printer import print_task
 
 CURRENT_DIR = os.path.dirname(__file__)
 

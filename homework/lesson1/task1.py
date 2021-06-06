@@ -3,7 +3,14 @@
 соответствующих переменных. Затем с помощью онлайн-конвертера преобразовать строковые представление в формат Unicode и
 также проверить тип и содержимое переменных.
 """
-from homework.common.printer import print_task
+import os
+import sys
+
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from common.printer import print_task
 
 
 def compare_string_with_unicode(string_format: str, unicode_format: str):

@@ -16,10 +16,16 @@ b. Создать функцию write_to_csv(), в которую переда�
 c.Проверить работу программы через вызов функции write_to_csv().
 """
 import os
+import sys
 import regex
 import csv
 
-from homework.common.printer import print_task
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+
+from common.printer import print_task
 
 CURRENT_DIR = os.path.dirname(__file__)
 

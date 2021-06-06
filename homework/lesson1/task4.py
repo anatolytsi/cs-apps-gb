@@ -2,7 +2,14 @@
 Преобразовать слова «разработка», «администрирование», «protocol», «standard» из строкового представления в байтовое и
 выполнить обратное преобразование (используя методы encode и decode).
 """
-from homework.common.printer import print_task
+import os
+import sys
+
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from common.printer import print_task
 
 
 def encode_decode_string(string: str):
