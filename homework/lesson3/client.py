@@ -17,11 +17,11 @@ import pickle
 import time
 from socket import *
 
-PACKAGE_PARENT = '..'
+PACKAGE_PARENT = '../..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-from common.printer import timed_print
+from homework.common.printer import print_task
 
 
 def send_data_to_server(server: socket, data: dict) -> bool:
