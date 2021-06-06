@@ -15,22 +15,41 @@ import pickle
 import time
 from socket import *
 
+from homework.common.printer import timed_print
+
 online_users = []
 chats = {}
 
 
 def send_msg(client: socket, response: dict):
-    client.send(pickle.dumps(response))
+    """
+    Шлет ответ клиенту
+
+    :param client: сокет клиента
+    :param response: ответ в формате словаря для дальнейшей конвертации в JSON
+    """
+    client.send(pickle.dumps(response)) if response else None
 
 
 def message_dispatcher(msg: dict) -> dict:
+    """
+    Распаковщик сообщений от клиентов
+
+    :param msg: сообщение в формате словаря
+    :return: ответ в формате словаря
+    """
+    # Решение сделать переменные вместо структур было принято для нормального вывода в консоль
     response_code = None
     response_text = None
     response_is_error = None
     if msg['action'] == 'authenticate':
+        # Если запросил аутентификацию
         if msg['user']['account_name'] not in online_users:
+            # Если пользователь не аутентифицирован
             # TODO нормальную проверку пароля
             if msg['user']['password'] == 'password':
+                # Если пароль совпадает с соответсвующим паролем (в нормальной ситуации у каждого пользователя свой
+                # пароль, естественно)
                 online_users.append(msg['user']['account_name'])
                 response_code = 202
                 response_text = f'Пользователь {msg["user"]["account_name"]} аутентифицирован'
@@ -112,36 +131,57 @@ def message_dispatcher(msg: dict) -> dict:
     return response
 
 
-def server_listen(addr: str = '', port: int = 7777):
-    addr = addr if addr else ''
+def server_start(address: str = '', port: int = 7777) -> (socket, None):
+    """
+    Запускает сервер по заданному адресу и порту
+
+    :param address: адрес запускаемого сервера
+    :param port: порт запускаемого сервера
+    :return: возвращает сокет или None если инициализация не прошла
+    """
+    address = '127.0.0.1' if address == 'localhost' else address if address else ''
     port = port if port else 7777
-    addr = '127.0.0.1' if addr == 'localhost' else addr
-    s = socket(AF_INET, SOCK_STREAM)
+    soc = socket(AF_INET, SOCK_STREAM)
     try:
-        s.bind((addr, int(port)))
+        soc.bind((address, int(port)))
     except gaierror:
-        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
-              f'проверьте правильность введенного адреса')
+        timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
         return
-    s.listen(5)
-    s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    print(f'[{time.strftime("%H:%M:%S")}] Сервер запущен по адресу {addr}:{port}')
+    soc.listen(5)
+    soc.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+    timed_print(f'Сервер запущен по адресу {address}:{port}')
+    return soc
+
+
+def server_listen(soc: socket):
+    """
+    Основной цикл работы сервера
+
+    :param soc: сокет запущенного сервера
+    """
+    if not soc:
+        return
     while True:
-        client, addr = s.accept()
+        client, addr = soc.accept()
+        # Соединение с клиентом установленно
         while True:
+            # Получаем данные пока клиент подключен и что то шлет
             try:
                 data = client.recv(1024)
                 response = message_dispatcher(pickle.loads(data))
                 send_msg(client, response)
-            except EOFError:
-                break
-            except ConnectionResetError:
+            except (ConnectionResetError, EOFError):
                 # Клиент вышел сам
                 break
         client.close()
 
 
 def get_args() -> dict:
+    """
+    Получение аргументов для запуска из консоли
+
+    :return: словарь с необходимыми аргументами
+    """
     parser = argparse.ArgumentParser(description='Простой сервер на Python')
     parser.add_argument('-a', '--address',
                         help='IP адрес сервера, по умолчанию слушает все доступные адреса',
@@ -154,7 +194,8 @@ def get_args() -> dict:
 
 def main():
     args = get_args()
-    server_listen(args['address'], args['port'])
+    soc = server_start(args['address'], args['port'])
+    server_listen(soc)
 
 
 if __name__ == '__main__':

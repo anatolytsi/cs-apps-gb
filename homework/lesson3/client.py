@@ -15,17 +15,48 @@ import pickle
 import time
 from socket import *
 
+from homework.common.printer import timed_print
 
-def get_response_from_server(server: socket):
+
+def send_data_to_server(server: socket, data: dict) -> bool:
+    """
+    Отправка данных на сервер
+
+    :param server: присоединенный сервер
+    :param data: данные для отправки
+    :return: успешность операции
+    """
+    server.send(pickle.dumps(data))
+    # TODO проверку на получение сообщения сервером
+    return True
+
+
+def get_response_from_server(server: socket) -> bool:
+    """
+    Ожидание ответа от сервера (без таймаута)
+
+    :param server: присоединенный сервер
+    :return: успешность операции
+    """
     data = server.recv(1024)
     response = pickle.loads(data)
     if 'error' in response:
-        print(f'[{time.strftime("%H:%M:%S")}] Сервер ответил ошибкой: {response["response"]} {response["error"]}')
+        timed_print(f'Сервер ответил ошибкой: {response["response"]} {response["error"]}')
+        return False
     elif 'alert' in response:
-        print(f'[{time.strftime("%H:%M:%S")}] Сервер ответил: {response["response"]} {response["alert"]}')
+        timed_print(f'Сервер ответил: {response["response"]} {response["alert"]}')
+    return True
 
 
-def authenticate_client(server: socket, username: str, password: str):
+def authenticate_client(server: socket, username: str, password: str) -> bool:
+    """
+    Аутентификация клиента
+    
+    :param server: присоединенный сервер
+    :param username: имя пользователя
+    :param password: пароль пользователя
+    :return: успешность операции
+    """
     msg = {
         "action": "authenticate",
         "time": time.time(),
@@ -34,12 +65,19 @@ def authenticate_client(server: socket, username: str, password: str):
             "password": password
         }
     }
-    print(f'[{time.strftime("%H:%M:%S")}] Аутентификация {username}...')
-    server.send(pickle.dumps(msg))
-    get_response_from_server(server)
+    timed_print(f'Аутентификация {username}...')
+    send_data_to_server(server, msg)
+    return get_response_from_server(server)
 
 
-def send_presence(server: socket, username: str):
+def send_presence(server: socket, username: str) -> bool:
+    """
+    Отправка presence сообщения
+    
+    :param server: присоединенный сервер
+    :param username: имя аутентифицированного пользователя
+    :return: успешность операции
+    """
     msg = {
         "action": "presence",
         "time": time.time(),
@@ -47,11 +85,20 @@ def send_presence(server: socket, username: str):
             "account_name": username
         }
     }
-    print(f'[{time.strftime("%H:%M:%S")}] Шлем presence...')
-    server.send(pickle.dumps(msg))
+    timed_print(f'Шлем presence...')
+    return send_data_to_server(server, msg)
 
 
-def send_msg(server: socket, sender: str, receiver: str, message: str):
+def send_msg(server: socket, sender: str, receiver: str, message: str) -> bool:
+    """
+    Отправить сообщению пользователю/в чат
+    
+    :param server: присоединенный сервер
+    :param sender: имя аутентифицированного пользователя
+    :param receiver: получатель/чат
+    :param message: сообщение для отправки
+    :return: успешность операции
+    """
     msg = {
         "action": "msg",
         "time": time.time(),
@@ -59,15 +106,23 @@ def send_msg(server: socket, sender: str, receiver: str, message: str):
         "to": receiver,
         "message": message,
         "user": {
-            "account_name": sender
+            "account_name": sender  # Костыль
         }
     }
-    print(f'[{time.strftime("%H:%M:%S")}] Шлем сообщение от {sender} к {receiver}: {message}')
-    server.send(pickle.dumps(msg))
-    get_response_from_server(server)
+    timed_print(f'Шлем сообщение от {sender} к {receiver}: {message}')
+    send_data_to_server(server, msg)
+    return get_response_from_server(server)
 
 
-def join_room(server: socket, username: str, room: str):
+def join_room(server: socket, username: str, room: str) -> bool:
+    """
+    Присоединиться к чату
+    
+    :param server: присоединенный сервер
+    :param username: имя аутентифицированного пользователя
+    :param room: имя чата
+    :return: успешность операции
+    """
     msg = {
         "action": "join",
         "time": time.time(),
@@ -76,12 +131,20 @@ def join_room(server: socket, username: str, room: str):
             "account_name": username
         }
     }
-    print(f'[{time.strftime("%H:%M:%S")}] Пользователь {username} присоединяется к чату {room}...')
-    server.send(pickle.dumps(msg))
-    get_response_from_server(server)
+    timed_print(f'Пользователь {username} присоединяется к чату {room}...')
+    send_data_to_server(server, msg)
+    return get_response_from_server(server)
 
 
-def leave_room(server: socket, username: str, room: str):
+def leave_room(server: socket, username: str, room: str) -> bool:
+    """
+    Покинуть чат
+    
+    :param server: присоединенный сервер
+    :param username: имя аутентифицированного пользователя
+    :param room: имя чата
+    :return: успешность операции
+    """
     msg = {
         "action": "leave",
         "time": time.time(),
@@ -90,37 +153,52 @@ def leave_room(server: socket, username: str, room: str):
             "account_name": username
         }
     }
-    print(f'[{time.strftime("%H:%M:%S")}] Пользователь {username} выходит из чата {room}...')
-    server.send(pickle.dumps(msg))
-    get_response_from_server(server)
+    timed_print(f'Пользователь {username} выходит из чата {room}...')
+    send_data_to_server(server, msg)
+    return get_response_from_server(server)
 
 
-def connect_client(addr: str, port: int = 7777) -> socket:
+def connect_client(address: str, port: int = 7777) -> (socket, None):
+    """
+    Подключение клиента к серверу
+    
+    :param address: адрес сервера
+    :param port: порт сервера
+    :return: возвращает сокет или None если инициализация не прошла
+    """
+    address = '127.0.0.1' if address == 'localhost' else address
     port = port if port else 7777
-    addr = '127.0.0.1' if addr == 'localhost' else addr
     server = socket(AF_INET, SOCK_STREAM)
     try:
-        server.connect((addr, int(port)))
-        print(f'[{time.strftime("%H:%M:%S")}] Клиент подключился к {addr}:{port}')
+        server.connect((address, int(port)))
+        timed_print(f'Клиент подключился к {address}:{port}')
     except ConnectionRefusedError:
         server = None
-        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Сервер {addr}:{port} отклонил подключение, проверьте порт или '
-              f'сервер для подключения')
+        timed_print(f'Ошибка! Сервер {address}:{port} отклонил подключение, проверьте порт или сервер для подключения')
     except TimeoutError:
         server = None
-        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Превышено время ожидания ответа от {addr}:{port}')
+        timed_print(f'Ошибка! Превышено время ожидания ответа от {address}:{port}')
     except gaierror:
         server = None
-        print(f'[{time.strftime("%H:%M:%S")}] Ошибка! Неправильный IP адрес {addr}:{port}, '
-              f'проверьте правильность введенного адреса')
+        timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
     return server
 
 
 def disconnect_client(server: socket):
+    """
+    Отключение клиента от сервера
+    
+    :param server: подключенный сокет
+    """
     server.close()
 
 
 def get_args() -> dict:
+    """
+    Получение аргументов для запуска из консоли
+    
+    :return: словарь с необходимыми аргументами
+    """
     parser = argparse.ArgumentParser(description='Простой клиент на Python')
     parser.add_argument('-a', '--address',
                         help='IP адрес сервера',
