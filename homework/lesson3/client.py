@@ -37,15 +37,19 @@ def send_data_to_server(server: socket, data: dict) -> bool:
     return True
 
 
-def get_response_from_server(server: socket) -> bool:
+def get_response_from_server(server: socket, test_response: dict = None) -> bool:
     """
     Ожидание ответа от сервера (без таймаута)
 
     :param server: присоединенный сервер
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
-    data = server.recv(1024)
-    response = pickle.loads(data)
+    if test_response:
+        response = test_response
+    else:
+        data = server.recv(1024)
+        response = pickle.loads(data)
     if 'error' in response:
         timed_print(f'Сервер ответил ошибкой: {response["response"]} {response["error"]}')
         return False
@@ -54,13 +58,14 @@ def get_response_from_server(server: socket) -> bool:
     return True
 
 
-def authenticate_client(server: socket, username: str, password: str) -> bool:
+def authenticate_client(server: socket, username: str, password: str, test_response: dict = None) -> bool:
     """
     Аутентификация клиента
     
     :param server: присоединенный сервер
     :param username: имя пользователя
     :param password: пароль пользователя
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
     msg = {
@@ -72,16 +77,17 @@ def authenticate_client(server: socket, username: str, password: str) -> bool:
         }
     }
     timed_print(f'Аутентификация {username}...')
-    send_data_to_server(server, msg)
-    return get_response_from_server(server)
+    send_data_to_server(server, msg) if not test_response else None
+    return get_response_from_server(server, test_response)
 
 
-def send_presence(server: socket, username: str) -> bool:
+def send_presence(server: socket, username: str, test_response: dict = None) -> bool:
     """
     Отправка presence сообщения
     
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
     msg = {
@@ -92,10 +98,10 @@ def send_presence(server: socket, username: str) -> bool:
         }
     }
     timed_print(f'Шлем presence...')
-    return send_data_to_server(server, msg)
+    return send_data_to_server(server, msg) if not test_response else True
 
 
-def send_msg(server: socket, sender: str, receiver: str, message: str) -> bool:
+def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> bool:
     """
     Отправить сообщению пользователю/в чат
     
@@ -103,6 +109,7 @@ def send_msg(server: socket, sender: str, receiver: str, message: str) -> bool:
     :param sender: имя аутентифицированного пользователя
     :param receiver: получатель/чат
     :param message: сообщение для отправки
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
     msg = {
@@ -116,17 +123,18 @@ def send_msg(server: socket, sender: str, receiver: str, message: str) -> bool:
         }
     }
     timed_print(f'Шлем сообщение от {sender} к {receiver}: {message}')
-    send_data_to_server(server, msg)
-    return get_response_from_server(server)
+    send_data_to_server(server, msg) if not test_response else None
+    return get_response_from_server(server, test_response)
 
 
-def join_room(server: socket, username: str, room: str) -> bool:
+def join_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Присоединиться к чату
     
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
     :param room: имя чата
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
     msg = {
@@ -138,17 +146,18 @@ def join_room(server: socket, username: str, room: str) -> bool:
         }
     }
     timed_print(f'Пользователь {username} присоединяется к чату {room}...')
-    send_data_to_server(server, msg)
-    return get_response_from_server(server)
+    send_data_to_server(server, msg) if not test_response else None
+    return get_response_from_server(server, test_response)
 
 
-def leave_room(server: socket, username: str, room: str) -> bool:
+def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Покинуть чат
     
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
     :param room: имя чата
+    :param test_response: тестовый ответ от сервера
     :return: успешность операции
     """
     msg = {
@@ -160,8 +169,8 @@ def leave_room(server: socket, username: str, room: str) -> bool:
         }
     }
     timed_print(f'Пользователь {username} выходит из чата {room}...')
-    send_data_to_server(server, msg)
-    return get_response_from_server(server)
+    send_data_to_server(server, msg) if not test_response else None
+    return get_response_from_server(server, test_response)
 
 
 def connect_client(address: str, port: int = 7777) -> (socket, None):
