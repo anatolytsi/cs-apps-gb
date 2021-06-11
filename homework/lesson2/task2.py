@@ -8,11 +8,16 @@ orders.json. При записи данных указать величину о
 
 b. Проверить работу программы через вызов функции write_order_to_json() с передачей в нее значений каждого параметра.
 """
-import json
 import os
+import sys
+import json
 import time
 
-from homework.common.task_printer import print_task
+PACKAGE_PARENT = '../..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from homework.common.printer import print_task
 
 CURRENT_DIR = os.path.dirname(__file__)
 

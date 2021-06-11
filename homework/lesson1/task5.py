@@ -3,8 +3,14 @@
 кириллице.
 """
 import subprocess
+import os
+import sys
 
-from homework.common.task_printer import print_task
+PACKAGE_PARENT = '../..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from homework.common.printer import print_task
 
 
 def ping_website(url: str):
