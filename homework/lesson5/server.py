@@ -10,18 +10,11 @@
     - addr — ip-адрес сервера;
     - port — tcp-порт на сервере, по умолчанию 7777.
 """
-import os
-import sys
 import argparse
 import pickle
-import time
 from socket import *
 
-PACKAGE_PARENT = '../..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
-from homework.common.printer import timed_print
+from log.server_log_config import log_error, log_info, log_critical
 
 online_users = []
 chats = {}
@@ -185,9 +178,10 @@ def message_dispatcher(msg: dict) -> dict:
 
     response = {}
     if response_code:
-        print(
-            f'[{time.strftime("%H:%M:%S")}] Сервер отвечает: {response_code} '
-            f'{"Ошибка! " if response_is_error else ""}{response_text}')
+        if response_is_error:
+            log_error(f'{response_code}: {response_text}')
+        else:
+            log_info(f'{response_code}: {response_text}')
         response = {'response': response_code, 'error' if response_is_error else 'alert': response_text}
     return response
 
@@ -206,11 +200,13 @@ def server_start(address: str = '', port: int = 7777) -> (socket, None):
     try:
         soc.bind((address, int(port)))
     except gaierror:
-        timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
+        log_critical(f'Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
+        # timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
         return
     soc.listen(5)
     soc.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    timed_print(f'Сервер запущен по адресу {address}:{port}')
+    log_info(f'Сервер запущен по адресу {address}:{port}')
+    # timed_print(f'Сервер запущен по адресу {address}:{port}')
     return soc
 
 
@@ -224,6 +220,7 @@ def server_listen(soc: socket):
         return
     while True:
         client, addr = soc.accept()
+        log_info(f'Соединение с клиентом установленно')
         # Соединение с клиентом установленно
         while True:
             # Получаем данные пока клиент подключен и что то шлет
@@ -233,6 +230,7 @@ def server_listen(soc: socket):
                 send_msg(client, response)
             except (ConnectionResetError, EOFError):
                 # Клиент вышел сам
+                log_info(f'Клиент отключился')
                 break
         client.close()
 

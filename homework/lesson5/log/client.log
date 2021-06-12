@@ -1,0 +1,5 @@
+2021-06-12 11:20:04,739 INFO     client     Sample info message
+2021-06-12 11:20:04,739 DEBUG    client     Sample debug message
+2021-06-12 11:20:04,740 WARNING  client     Sample warning message
+2021-06-12 11:20:04,740 ERROR    client     Sample error message
+2021-06-12 11:20:04,740 CRITICAL client     Sample critical message

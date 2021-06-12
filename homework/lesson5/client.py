@@ -10,18 +10,12 @@
     - addr — ip-адрес сервера;
     - port — tcp-порт на сервере, по умолчанию 7777.
 """
-import os
-import sys
 import argparse
 import pickle
 import time
 from socket import *
 
-PACKAGE_PARENT = '../..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
-from homework.common.printer import timed_print
+from log.client_log_config import log_info, log_error, log_critical
 
 
 def send_data_to_server(server: socket, data: dict) -> bool:
@@ -51,10 +45,10 @@ def get_response_from_server(server: socket, test_response: dict = None) -> bool
         data = server.recv(1024)
         response = pickle.loads(data)
     if 'error' in response:
-        timed_print(f'Сервер ответил ошибкой: {response["response"]} {response["error"]}')
+        log_error(f'Сервер ответил ошибкой: {response["response"]} {response["error"]}')
         return False
     elif 'alert' in response:
-        timed_print(f'Сервер ответил: {response["response"]} {response["alert"]}')
+        log_info(f'Сервер ответил: {response["response"]} {response["alert"]}')
     return True
 
 
@@ -76,7 +70,7 @@ def authenticate_client(server: socket, username: str, password: str, test_respo
             "password": password
         }
     }
-    timed_print(f'Аутентификация {username}...')
+    log_info(f'Аутентификация {username}...')
     send_data_to_server(server, msg) if not test_response else None
     return get_response_from_server(server, test_response)
 
@@ -97,7 +91,7 @@ def send_presence(server: socket, username: str, test_response: dict = None) -> 
             "account_name": username
         }
     }
-    timed_print(f'Шлем presence...')
+    log_info(f'Шлем presence...')
     return send_data_to_server(server, msg) if not test_response else True
 
 
@@ -122,7 +116,7 @@ def send_msg(server: socket, sender: str, receiver: str, message: str, test_resp
             "account_name": sender  # Костыль
         }
     }
-    timed_print(f'Шлем сообщение от {sender} к {receiver}: {message}')
+    log_info(f'Шлем сообщение от {sender} к {receiver}: {message}')
     send_data_to_server(server, msg) if not test_response else None
     return get_response_from_server(server, test_response)
 
@@ -145,7 +139,7 @@ def join_room(server: socket, username: str, room: str, test_response: dict = No
             "account_name": username
         }
     }
-    timed_print(f'Пользователь {username} присоединяется к чату {room}...')
+    log_info(f'Пользователь {username} присоединяется к чату {room}...')
     send_data_to_server(server, msg) if not test_response else None
     return get_response_from_server(server, test_response)
 
@@ -168,7 +162,7 @@ def leave_room(server: socket, username: str, room: str, test_response: dict = N
             "account_name": username
         }
     }
-    timed_print(f'Пользователь {username} выходит из чата {room}...')
+    log_info(f'Пользователь {username} выходит из чата {room}...')
     send_data_to_server(server, msg) if not test_response else None
     return get_response_from_server(server, test_response)
 
@@ -186,16 +180,16 @@ def connect_client(address: str, port: int = 7777) -> (socket, None):
     server = socket(AF_INET, SOCK_STREAM)
     try:
         server.connect((address, int(port)))
-        timed_print(f'Клиент подключился к {address}:{port}')
+        log_info(f'Клиент подключился к {address}:{port}')
     except ConnectionRefusedError:
         server = None
-        timed_print(f'Ошибка! Сервер {address}:{port} отклонил подключение, проверьте порт или сервер для подключения')
+        log_critical(f'Ошибка! Сервер {address}:{port} отклонил подключение, проверьте порт или сервер для подключения')
     except TimeoutError:
         server = None
-        timed_print(f'Ошибка! Превышено время ожидания ответа от {address}:{port}')
+        log_critical(f'Ошибка! Превышено время ожидания ответа от {address}:{port}')
     except gaierror:
         server = None
-        timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
+        log_critical(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
     return server
 
 
