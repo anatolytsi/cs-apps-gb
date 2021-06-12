@@ -12,7 +12,7 @@
     <li><a href="homework/lesson2">Файловое хранение данных</a></li>
     <li><a href="homework/lesson3">Основы сетевого программирования</a></li>
     <li><a href="tests/lesson3">Основы тестирования</a></li>
-    <li><a href="#">Логирование</a></li>
+    <li><a href="homework/lesson5">Логирование</a></li>
     <li><a href="#">Декораторы и продолжение работы с сетью</a></li>
     <li><a href="#">Модуль select, слоты</a></li>
     <li><a href="#">Потоки</a></li>
