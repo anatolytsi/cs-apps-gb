@@ -15,9 +15,10 @@ import pickle
 import time
 from socket import *
 
-from log.client_log_config import log_info, log_error, log_critical
+from log.client_log_config import log_info, log_error, log_critical, log
 
 
+@log
 def send_data_to_server(server: socket, data: dict) -> bool:
     """
     Отправка данных на сервер
@@ -31,6 +32,7 @@ def send_data_to_server(server: socket, data: dict) -> bool:
     return True
 
 
+@log
 def get_response_from_server(server: socket, test_response: dict = None) -> bool:
     """
     Ожидание ответа от сервера (без таймаута)
@@ -52,6 +54,7 @@ def get_response_from_server(server: socket, test_response: dict = None) -> bool
     return True
 
 
+@log
 def authenticate_client(server: socket, username: str, password: str, test_response: dict = None) -> bool:
     """
     Аутентификация клиента
@@ -75,6 +78,7 @@ def authenticate_client(server: socket, username: str, password: str, test_respo
     return get_response_from_server(server, test_response)
 
 
+@log
 def send_presence(server: socket, username: str, test_response: dict = None) -> bool:
     """
     Отправка presence сообщения
@@ -95,6 +99,7 @@ def send_presence(server: socket, username: str, test_response: dict = None) -> 
     return send_data_to_server(server, msg) if not test_response else True
 
 
+@log
 def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> bool:
     """
     Отправить сообщению пользователю/в чат
@@ -121,6 +126,7 @@ def send_msg(server: socket, sender: str, receiver: str, message: str, test_resp
     return get_response_from_server(server, test_response)
 
 
+@log
 def join_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Присоединиться к чату
@@ -144,6 +150,7 @@ def join_room(server: socket, username: str, room: str, test_response: dict = No
     return get_response_from_server(server, test_response)
 
 
+@log
 def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Покинуть чат
@@ -167,6 +174,7 @@ def leave_room(server: socket, username: str, room: str, test_response: dict = N
     return get_response_from_server(server, test_response)
 
 
+@log
 def connect_client(address: str, port: int = 7777) -> (socket, None):
     """
     Подключение клиента к серверу
@@ -193,6 +201,7 @@ def connect_client(address: str, port: int = 7777) -> (socket, None):
     return server
 
 
+@log
 def disconnect_client(server: socket):
     """
     Отключение клиента от сервера
@@ -202,6 +211,7 @@ def disconnect_client(server: socket):
     server.close()
 
 
+@log
 def get_args() -> dict:
     """
     Получение аргументов для запуска из консоли
@@ -218,6 +228,7 @@ def get_args() -> dict:
     return vars(parser.parse_args())
 
 
+@log
 def main():
     username = 'user'
 

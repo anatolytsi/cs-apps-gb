@@ -1,4 +1,5 @@
 import logging
+from functools import wraps
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(name)-10s %(message)s',
@@ -14,6 +15,25 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 logger.setLevel(logging.DEBUG)
+
+
+def log(func):
+    """
+    Декоратор для логинга вызова функций
+    :param func: декорируемая функция
+    """""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        """
+        Функция - обертка для декорируемой функции
+        :param args: аргументы декорируемой функции
+        :param kwargs: кварги декорируемой функции
+        """
+        log_debug(f'Была вызвана функция {func.__name__} с аргументами {args}, {kwargs}')
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def log_info(msg: str) -> None:

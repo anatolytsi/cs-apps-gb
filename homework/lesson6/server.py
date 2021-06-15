@@ -14,12 +14,13 @@ import argparse
 import pickle
 from socket import *
 
-from log.server_log_config import log_error, log_info, log_critical
+from log.server_log_config import log_error, log_info, log_critical, log
 
 online_users = []
 chats = {}
 
 
+@log
 def send_msg(client: socket, response: dict):
     """
     Шлет ответ клиенту
@@ -30,6 +31,7 @@ def send_msg(client: socket, response: dict):
     client.send(pickle.dumps(response)) if response else None
 
 
+@log
 def message_authenticate(msg: dict) -> list:
     """
     Обработка сообщения аутентификации
@@ -59,6 +61,7 @@ def message_authenticate(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
+@log
 def message_sent(msg: dict) -> list:
     """
     Обработка пересылки сообщения
@@ -78,6 +81,7 @@ def message_sent(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
+@log
 def message_join_room(msg: dict) -> list:
     """
     Обработка сообщения присоединения к чату
@@ -100,6 +104,7 @@ def message_join_room(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
+@log
 def message_leave_room(msg: dict) -> list:
     """
     Обработка сообщения выхода из чата
@@ -130,6 +135,7 @@ def message_leave_room(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
+@log
 def message_quit(msg: dict) -> list:
     """
     Обработка сообщения quit
@@ -143,6 +149,7 @@ def message_quit(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
+@log
 def message_dispatcher(msg: dict) -> dict:
     """
     Распаковщик сообщений от клиентов
@@ -186,6 +193,7 @@ def message_dispatcher(msg: dict) -> dict:
     return response
 
 
+@log
 def server_start(address: str = '', port: int = 7777) -> (socket, None):
     """
     Запускает сервер по заданному адресу и порту
@@ -210,6 +218,7 @@ def server_start(address: str = '', port: int = 7777) -> (socket, None):
     return soc
 
 
+@log
 def server_listen(soc: socket):
     """
     Основной цикл работы сервера
@@ -235,6 +244,7 @@ def server_listen(soc: socket):
         client.close()
 
 
+@log
 def get_args() -> dict:
     """
     Получение аргументов для запуска из консоли
@@ -251,6 +261,7 @@ def get_args() -> dict:
     return vars(parser.parse_args())
 
 
+@log
 def main():
     args = get_args()
     soc = server_start(args['address'], args['port'])
@@ -259,3 +270,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+help()

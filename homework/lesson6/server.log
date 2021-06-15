@@ -1,0 +1,29 @@
+2021-06-15 22:08:10,190 DEBUG    server     Была вызвана функция main с аргументами (), {}
+2021-06-15 22:08:10,191 DEBUG    server     Была вызвана функция get_args с аргументами (), {}
+2021-06-15 22:08:10,209 DEBUG    server     Была вызвана функция server_start с аргументами (None, None), {}
+2021-06-15 22:08:10,211 INFO     server     Сервер запущен по адресу :7777
+2021-06-15 22:08:10,212 DEBUG    server     Была вызвана функция server_listen с аргументами (<socket.socket fd=312, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 7777)>,), {}
+2021-06-15 22:08:25,076 INFO     server     Соединение с клиентом установленно
+2021-06-15 22:08:25,086 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'authenticate', 'time': 1623787705.0811276, 'user': {'account_name': 'user', 'password': 'password'}},), {}
+2021-06-15 22:08:25,087 DEBUG    server     Была вызвана функция message_authenticate с аргументами ({'action': 'authenticate', 'time': 1623787705.0811276, 'user': {'account_name': 'user', 'password': 'password'}},), {}
+2021-06-15 22:08:25,087 INFO     server     202: Пользователь user аутентифицирован
+2021-06-15 22:08:25,088 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {'response': 202, 'alert': 'Пользователь user аутентифицирован'}), {}
+2021-06-15 22:08:25,092 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'presence', 'time': 1623787705.0907056, 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,093 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {}), {}
+2021-06-15 22:08:25,095 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'join', 'time': 1623787705.0935512, 'room': '#geekbrains', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,101 DEBUG    server     Была вызвана функция message_join_room с аргументами ({'action': 'join', 'time': 1623787705.0935512, 'room': '#geekbrains', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,101 INFO     server     200: Пользователь user присоединился к чату #geekbrains
+2021-06-15 22:08:25,102 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {'response': 200, 'alert': 'Пользователь user присоединился к чату #geekbrains'}), {}
+2021-06-15 22:08:25,115 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'msg', 'time': 1623787705.1113117, 'from': 'user', 'to': '#geekbrains', 'message': 'Всем привет в этом чатике!', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,116 DEBUG    server     Была вызвана функция message_sent с аргументами ({'action': 'msg', 'time': 1623787705.1113117, 'from': 'user', 'to': '#geekbrains', 'message': 'Всем привет в этом чатике!', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,117 INFO     server     200: Сообщение от user к #geekbrains доставлено
+2021-06-15 22:08:25,117 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {'response': 200, 'alert': 'Сообщение от user к #geekbrains доставлено'}), {}
+2021-06-15 22:08:25,128 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'msg', 'time': 1623787705.1262746, 'from': 'user', 'to': '#geekbrains', 'message': 'Ну и больно надо...', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,129 DEBUG    server     Была вызвана функция message_sent с аргументами ({'action': 'msg', 'time': 1623787705.1262746, 'from': 'user', 'to': '#geekbrains', 'message': 'Ну и больно надо...', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,129 INFO     server     200: Сообщение от user к #geekbrains доставлено
+2021-06-15 22:08:25,130 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {'response': 200, 'alert': 'Сообщение от user к #geekbrains доставлено'}), {}
+2021-06-15 22:08:25,145 DEBUG    server     Была вызвана функция message_dispatcher с аргументами ({'action': 'leave', 'time': 1623787705.1373212, 'room': '#geekbrains', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,146 DEBUG    server     Была вызвана функция message_leave_room с аргументами ({'action': 'leave', 'time': 1623787705.1373212, 'room': '#geekbrains', 'user': {'account_name': 'user'}},), {}
+2021-06-15 22:08:25,150 INFO     server     200: Пользователь user покинул чат #geekbrains
+2021-06-15 22:08:25,164 DEBUG    server     Была вызвана функция send_msg с аргументами (<socket.socket fd=420, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 57325)>, {'response': 200, 'alert': 'Пользователь user покинул чат #geekbrains'}), {}
+2021-06-15 22:08:25,185 INFO     server     Клиент отключился
