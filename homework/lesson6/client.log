@@ -1,0 +1,35 @@
+2021-06-15 22:08:12,538 DEBUG    client     Была вызвана функция main с аргументами (), {}
+2021-06-15 22:08:12,538 DEBUG    client     Была вызвана функция get_args с аргументами (), {}
+2021-06-15 22:08:25,055 DEBUG    client     Была вызвана функция main с аргументами (), {}
+2021-06-15 22:08:25,056 DEBUG    client     Была вызвана функция get_args с аргументами (), {}
+2021-06-15 22:08:25,074 DEBUG    client     Была вызвана функция connect_client с аргументами ('localhost', None), {}
+2021-06-15 22:08:25,076 INFO     client     Клиент подключился к 127.0.0.1:7777
+2021-06-15 22:08:25,081 DEBUG    client     Была вызвана функция authenticate_client с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user', 'password'), {}
+2021-06-15 22:08:25,081 INFO     client     Аутентификация user...
+2021-06-15 22:08:25,084 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'authenticate', 'time': 1623787705.0811276, 'user': {'account_name': 'user', 'password': 'password'}}), {}
+2021-06-15 22:08:25,086 DEBUG    client     Была вызвана функция get_response_from_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, None), {}
+2021-06-15 22:08:25,089 INFO     client     Сервер ответил: 202 Пользователь user аутентифицирован
+2021-06-15 22:08:25,090 DEBUG    client     Была вызвана функция send_presence с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user'), {}
+2021-06-15 22:08:25,090 INFO     client     Шлем presence...
+2021-06-15 22:08:25,092 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1623787705.0907056, 'user': {'account_name': 'user'}}), {}
+2021-06-15 22:08:25,092 DEBUG    client     Была вызвана функция join_room с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user', '#geekbrains'), {}
+2021-06-15 22:08:25,093 INFO     client     Пользователь user присоединяется к чату #geekbrains...
+2021-06-15 22:08:25,094 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'join', 'time': 1623787705.0935512, 'room': '#geekbrains', 'user': {'account_name': 'user'}}), {}
+2021-06-15 22:08:25,095 DEBUG    client     Была вызвана функция get_response_from_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, None), {}
+2021-06-15 22:08:25,105 INFO     client     Сервер ответил: 200 Пользователь user присоединился к чату #geekbrains
+2021-06-15 22:08:25,109 DEBUG    client     Была вызвана функция send_msg с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user', '#geekbrains', 'Всем привет в этом чатике!'), {}
+2021-06-15 22:08:25,111 INFO     client     Шлем сообщение от user к #geekbrains: Всем привет в этом чатике!
+2021-06-15 22:08:25,112 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'msg', 'time': 1623787705.1113117, 'from': 'user', 'to': '#geekbrains', 'message': 'Всем привет в этом чатике!', 'user': {'account_name': 'user'}}), {}
+2021-06-15 22:08:25,115 DEBUG    client     Была вызвана функция get_response_from_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, None), {}
+2021-06-15 22:08:25,121 INFO     client     Сервер ответил: 200 Сообщение от user к #geekbrains доставлено
+2021-06-15 22:08:25,122 DEBUG    client     Была вызвана функция send_msg с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user', '#geekbrains', 'Ну и больно надо...'), {}
+2021-06-15 22:08:25,126 INFO     client     Шлем сообщение от user к #geekbrains: Ну и больно надо...
+2021-06-15 22:08:25,127 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'msg', 'time': 1623787705.1262746, 'from': 'user', 'to': '#geekbrains', 'message': 'Ну и больно надо...', 'user': {'account_name': 'user'}}), {}
+2021-06-15 22:08:25,128 DEBUG    client     Была вызвана функция get_response_from_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, None), {}
+2021-06-15 22:08:25,132 INFO     client     Сервер ответил: 200 Сообщение от user к #geekbrains доставлено
+2021-06-15 22:08:25,136 DEBUG    client     Была вызвана функция leave_room с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, 'user', '#geekbrains'), {}
+2021-06-15 22:08:25,137 INFO     client     Пользователь user выходит из чата #geekbrains...
+2021-06-15 22:08:25,144 DEBUG    client     Была вызвана функция send_data_to_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, {'action': 'leave', 'time': 1623787705.1373212, 'room': '#geekbrains', 'user': {'account_name': 'user'}}), {}
+2021-06-15 22:08:25,145 DEBUG    client     Была вызвана функция get_response_from_server с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>, None), {}
+2021-06-15 22:08:25,168 INFO     client     Сервер ответил: 200 Пользователь user покинул чат #geekbrains
+2021-06-15 22:08:25,171 DEBUG    client     Была вызвана функция disconnect_client с аргументами (<socket.socket fd=332, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 57325), raddr=('127.0.0.1', 7777)>,), {}
