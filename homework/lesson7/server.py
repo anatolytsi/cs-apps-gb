@@ -12,15 +12,17 @@
 """
 import argparse
 import pickle
+from select import select
 from socket import *
 
 from log.server_log_config import log_error, log_info, log_critical, log
 
 online_users = []
 chats = {}
+clients = []
 
 
-@log
+# @log
 def send_msg(client: socket, response: dict):
     """
     Шлет ответ клиенту
@@ -31,7 +33,7 @@ def send_msg(client: socket, response: dict):
     client.send(pickle.dumps(response)) if response else None
 
 
-@log
+# @log
 def message_authenticate(msg: dict) -> list:
     """
     Обработка сообщения аутентификации
@@ -61,7 +63,7 @@ def message_authenticate(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
-@log
+# @log
 def message_sent(msg: dict) -> list:
     """
     Обработка пересылки сообщения
@@ -75,13 +77,23 @@ def message_sent(msg: dict) -> list:
     if 'from' in msg and msg['from']:
         if 'to' in msg and msg['to']:
             # TODO проверку на существование пользователей
-            response_code = 200
-            response_text = f'Сообщение от {msg["from"]} к {msg["to"]} доставлено'
-            response_is_error = False
+            if msg['to'] in online_users:
+                response_code = 200
+                response_text = f'Сообщение от {msg["from"]} к {msg["to"]} доставлено'
+                response_is_error = False
+                for client in clients:
+                    send_msg(client, {
+                        'response': response_code,
+                        'error' if response_is_error else 'alert': response_text
+                    })
+            else:
+                response_code = 400
+                response_text = f'Пользователь {msg["to"]} не онлайн'
+                response_is_error = True
     return [response_code, response_text, response_is_error]
 
 
-@log
+# @log
 def message_join_room(msg: dict) -> list:
     """
     Обработка сообщения присоединения к чату
@@ -104,7 +116,7 @@ def message_join_room(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
-@log
+# @log
 def message_leave_room(msg: dict) -> list:
     """
     Обработка сообщения выхода из чата
@@ -135,7 +147,7 @@ def message_leave_room(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
-@log
+# @log
 def message_quit(msg: dict) -> list:
     """
     Обработка сообщения quit
@@ -149,7 +161,7 @@ def message_quit(msg: dict) -> list:
     return [response_code, response_text, response_is_error]
 
 
-@log
+# @log
 def message_dispatcher(msg: dict) -> dict:
     """
     Распаковщик сообщений от клиентов
@@ -193,7 +205,7 @@ def message_dispatcher(msg: dict) -> dict:
     return response
 
 
-@log
+# @log
 def server_start(address: str = '', port: int = 7777) -> (socket, None):
     """
     Запускает сервер по заданному адресу и порту
@@ -212,13 +224,36 @@ def server_start(address: str = '', port: int = 7777) -> (socket, None):
         # timed_print(f'Ошибка! Неправильный IP адрес {address}:{port}, проверьте правильность введенного адреса')
         return
     soc.listen(5)
+    soc.settimeout(0.2)
     soc.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     log_info(f'Сервер запущен по адресу {address}:{port}')
     # timed_print(f'Сервер запущен по адресу {address}:{port}')
     return soc
 
 
-@log
+def read_requests_and_get_responses(r_clients, all_clients):
+    responses = {}
+
+    for client in r_clients:
+        try:
+            data = client.recv(1024)
+            responses[client] = message_dispatcher(pickle.loads(data))
+        except:
+            print('Клиент отключился')
+            all_clients.remove(client)
+    return responses
+
+
+def write_responses(responses, w_clients, all_clients):
+    for client in w_clients:
+        if client in responses:
+            try:
+                send_msg(client, responses[client])
+            except:
+                print('Клиент отключился')
+                all_clients.remove(client)
+
+# @log
 def server_listen(soc: socket):
     """
     Основной цикл работы сервера
@@ -228,23 +263,31 @@ def server_listen(soc: socket):
     if not soc:
         return
     while True:
-        client, addr = soc.accept()
-        log_info(f'Соединение с клиентом установленно')
-        # Соединение с клиентом установленно
-        while True:
-            # Получаем данные пока клиент подключен и что то шлет
+        try:
+            client, addr = soc.accept()
+            log_info(f'Соединение с клиентом установленно')
+            # Соединение с клиентом установленно
+        except OSError as e:
+            pass
+        else:
+            clients.append(client)
+        finally:
+            wait = 5
+            r = []
+            w = []
             try:
-                data = client.recv(1024)
-                response = message_dispatcher(pickle.loads(data))
-                send_msg(client, response)
-            except (ConnectionResetError, EOFError):
-                # Клиент вышел сам
-                log_info(f'Клиент отключился')
-                break
-        client.close()
+                r, w, e = select(clients, clients, [], wait)
+            except:
+                # Client disconnected
+                pass
+            responses = {}
+            if r:
+                responses = read_requests_and_get_responses(r, clients)
+            if w:
+                write_responses(responses, w, clients)
 
 
-@log
+# @log
 def get_args() -> dict:
     """
     Получение аргументов для запуска из консоли
@@ -261,7 +304,7 @@ def get_args() -> dict:
     return vars(parser.parse_args())
 
 
-@log
+# @log
 def main():
     args = get_args()
     soc = server_start(args['address'], args['port'])

@@ -18,7 +18,7 @@ from socket import *
 from log.client_log_config import log_info, log_error, log_critical, log
 
 
-@log
+# @log
 def send_data_to_server(server: socket, data: dict) -> bool:
     """
     Отправка данных на сервер
@@ -32,8 +32,8 @@ def send_data_to_server(server: socket, data: dict) -> bool:
     return True
 
 
-@log
-def get_response_from_server(server: socket, test_response: dict = None) -> bool:
+# @log
+def get_response_from_server(server: socket, test_response: dict = None) -> dict:
     """
     Ожидание ответа от сервера (без таймаута)
 
@@ -48,14 +48,14 @@ def get_response_from_server(server: socket, test_response: dict = None) -> bool
         response = pickle.loads(data)
     if 'error' in response:
         log_error(f'Сервер ответил ошибкой: {response["response"]} {response["error"]}')
-        return False
+        return {}
     elif 'alert' in response:
         log_info(f'Сервер ответил: {response["response"]} {response["alert"]}')
-    return True
+    return response
 
 
-@log
-def authenticate_client(server: socket, username: str, password: str, test_response: dict = None) -> bool:
+# @log
+def authenticate_client(server: socket, username: str, password: str, test_response: dict = None) -> dict:
     """
     Аутентификация клиента
     
@@ -78,7 +78,7 @@ def authenticate_client(server: socket, username: str, password: str, test_respo
     return get_response_from_server(server, test_response)
 
 
-@log
+# @log
 def send_presence(server: socket, username: str, test_response: dict = None) -> bool:
     """
     Отправка presence сообщения
@@ -99,8 +99,8 @@ def send_presence(server: socket, username: str, test_response: dict = None) -> 
     return send_data_to_server(server, msg) if not test_response else True
 
 
-@log
-def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> bool:
+# @log
+def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> dict:
     """
     Отправить сообщению пользователю/в чат
     
@@ -126,8 +126,8 @@ def send_msg(server: socket, sender: str, receiver: str, message: str, test_resp
     return get_response_from_server(server, test_response)
 
 
-@log
-def join_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
+# @log
+def join_room(server: socket, username: str, room: str, test_response: dict = None) -> dict:
     """
     Присоединиться к чату
     
@@ -150,8 +150,8 @@ def join_room(server: socket, username: str, room: str, test_response: dict = No
     return get_response_from_server(server, test_response)
 
 
-@log
-def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
+# @log
+def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> dict:
     """
     Покинуть чат
     
@@ -174,7 +174,7 @@ def leave_room(server: socket, username: str, room: str, test_response: dict = N
     return get_response_from_server(server, test_response)
 
 
-@log
+# @log
 def connect_client(address: str, port: int = 7777) -> (socket, None):
     """
     Подключение клиента к серверу
@@ -201,7 +201,7 @@ def connect_client(address: str, port: int = 7777) -> (socket, None):
     return server
 
 
-@log
+# @log
 def disconnect_client(server: socket):
     """
     Отключение клиента от сервера
@@ -211,7 +211,7 @@ def disconnect_client(server: socket):
     server.close()
 
 
-@log
+# @log
 def get_args() -> dict:
     """
     Получение аргументов для запуска из консоли
@@ -228,22 +228,39 @@ def get_args() -> dict:
     return vars(parser.parse_args())
 
 
-@log
+def read_messages(server: socket):
+    while True:
+        response = get_response_from_server(server)
+        print(response)
+
+
+def write_messages(server: socket, username: str):
+    while True:
+        destination = input('Кому: ')
+        if destination == 'exit':
+            break
+
+        msg = input('Ваше сообщение: ')
+        if msg == 'exit':
+            break
+        send_msg(server, username, destination, msg)
+
+
+# @log
 def main():
-    username = 'user'
+    username = 'user1'
 
     args = get_args()
 
     # По хорошему я бы сделал все это в классе и не нужно было бы каждый раз передавать в метод сервер (сокет)
     server = connect_client(args['address'], args['port'])
+    client_type = input('Вы хотите только читать (r) или только писать (w)?')
     if server:
         authenticate_client(server, username, 'password')
-        send_presence(server, username)
-        join_room(server, username, '#geekbrains')
-        send_msg(server, username, '#geekbrains', 'Всем привет в этом чатике!')
-        send_msg(server, username, '#geekbrains', 'Ну и больно надо...')
-        leave_room(server, username, '#geekbrains')
-        disconnect_client(server)
+        if client_type == 'r':
+            read_messages(server)
+        else:
+            write_messages(server, username)
 
 
 if __name__ == '__main__':
