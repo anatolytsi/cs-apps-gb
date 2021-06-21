@@ -14,6 +14,6 @@
     <li><a href="tests/lesson3">Основы тестирования</a></li>
     <li><a href="homework/lesson5">Логирование</a></li>
     <li><a href="homework/lesson6">Декораторы и продолжение работы с сетью</a></li>
-    <li><a href="#">Модуль select, слоты</a></li>
+    <li><a href="homework/lesson7">Модуль select, слоты</a></li>
     <li><a href="#">Потоки</a></li>
 </ol>
