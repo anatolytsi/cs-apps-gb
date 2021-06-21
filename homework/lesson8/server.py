@@ -84,7 +84,7 @@ def message_sent(msg: dict) -> list:
                 for client in clients:
                     send_msg(client, {
                         'response': response_code,
-                        'error' if response_is_error else 'alert': response_text
+                        'error' if response_is_error else 'alert': msg['message']
                     })
             else:
                 response_code = 400
@@ -313,5 +313,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-help()
