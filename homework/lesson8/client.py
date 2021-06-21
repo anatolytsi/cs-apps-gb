@@ -11,9 +11,11 @@
     - port — tcp-порт на сервере, по умолчанию 7777.
 """
 import argparse
+import os
 import pickle
 import time
 from socket import *
+from threading import Thread
 
 from log.client_log_config import log_info, log_error, log_critical, log
 
@@ -58,7 +60,7 @@ def get_response_from_server(server: socket, test_response: dict = None) -> dict
 def authenticate_client(server: socket, username: str, password: str, test_response: dict = None) -> dict:
     """
     Аутентификация клиента
-    
+
     :param server: присоединенный сервер
     :param username: имя пользователя
     :param password: пароль пользователя
@@ -82,7 +84,7 @@ def authenticate_client(server: socket, username: str, password: str, test_respo
 def send_presence(server: socket, username: str, test_response: dict = None) -> bool:
     """
     Отправка presence сообщения
-    
+
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
     :param test_response: тестовый ответ от сервера
@@ -100,10 +102,10 @@ def send_presence(server: socket, username: str, test_response: dict = None) -> 
 
 
 # @log
-def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> dict:
+def send_msg(server: socket, sender: str, receiver: str, message: str, test_response: dict = None) -> bool:
     """
     Отправить сообщению пользователю/в чат
-    
+
     :param server: присоединенный сервер
     :param sender: имя аутентифицированного пользователя
     :param receiver: получатель/чат
@@ -122,15 +124,15 @@ def send_msg(server: socket, sender: str, receiver: str, message: str, test_resp
         }
     }
     log_info(f'Шлем сообщение от {sender} к {receiver}: {message}')
-    send_data_to_server(server, msg) if not test_response else None
-    return get_response_from_server(server, test_response)
+    return send_data_to_server(server, msg) if not test_response else False
+
 
 
 # @log
-def join_room(server: socket, username: str, room: str, test_response: dict = None) -> dict:
+def join_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Присоединиться к чату
-    
+
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
     :param room: имя чата
@@ -146,15 +148,14 @@ def join_room(server: socket, username: str, room: str, test_response: dict = No
         }
     }
     log_info(f'Пользователь {username} присоединяется к чату {room}...')
-    send_data_to_server(server, msg) if not test_response else None
-    return get_response_from_server(server, test_response)
+    return send_data_to_server(server, msg) if not test_response else False
 
 
 # @log
-def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> dict:
+def leave_room(server: socket, username: str, room: str, test_response: dict = None) -> bool:
     """
     Покинуть чат
-    
+
     :param server: присоединенный сервер
     :param username: имя аутентифицированного пользователя
     :param room: имя чата
@@ -170,15 +171,14 @@ def leave_room(server: socket, username: str, room: str, test_response: dict = N
         }
     }
     log_info(f'Пользователь {username} выходит из чата {room}...')
-    send_data_to_server(server, msg) if not test_response else None
-    return get_response_from_server(server, test_response)
+    return send_data_to_server(server, msg) if not test_response else False
 
 
 # @log
 def connect_client(address: str, port: int = 7777) -> (socket, None):
     """
     Подключение клиента к серверу
-    
+
     :param address: адрес сервера
     :param port: порт сервера
     :return: возвращает сокет или None если инициализация не прошла
@@ -205,7 +205,7 @@ def connect_client(address: str, port: int = 7777) -> (socket, None):
 def disconnect_client(server: socket):
     """
     Отключение клиента от сервера
-    
+
     :param server: подключенный сокет
     """
     server.close()
@@ -215,7 +215,7 @@ def disconnect_client(server: socket):
 def get_args() -> dict:
     """
     Получение аргументов для запуска из консоли
-    
+
     :return: словарь с необходимыми аргументами
     """
     parser = argparse.ArgumentParser(description='Простой клиент на Python')
@@ -236,14 +236,30 @@ def read_messages(server: socket):
 
 def write_messages(server: socket, username: str):
     while True:
-        destination = input('Кому: ')
-        if destination == 'exit':
+        choice = input('Что вы хотите сделать? (jc) - вступить в конференцию, (lc) - выйти из конференции, '
+                       '(m) - отправить сообщение, (exit) - выход из мессенджера')
+        if choice == 'jc':
+            group = input('Введите название группы: ')
+            join_room(server, username, group)
+        elif choice == 'lc':
+            group = input('Введите название группы: ')
+            leave_room(server, username, group)
+        elif choice == 'm':
+            destination = input('Кому: ')
+            msg = input('Ваше сообщение: ')
+            send_msg(server, username, destination, msg)
+        elif choice == 'exit':
+            disconnect_client(server)
+            os._exit(1)
             break
+        else:
+            print('Введено неверное сообщение!')
 
-        msg = input('Ваше сообщение: ')
-        if msg == 'exit':
-            break
-        send_msg(server, username, destination, msg)
+
+def presence_sender(server: socket, username: str):
+    while True:
+        send_presence(server, username)
+        time.sleep(5)
 
 
 # @log
@@ -254,13 +270,16 @@ def main():
 
     # По хорошему я бы сделал все это в классе и не нужно было бы каждый раз передавать в метод сервер (сокет)
     server = connect_client(args['address'], args['port'])
-    client_type = input('Вы хотите только читать (r) или только писать (w)?')
     if server:
+        # Синхронная аутентификация клиента
         authenticate_client(server, username, 'password')
-        if client_type == 'r':
-            read_messages(server)
-        else:
-            write_messages(server, username)
+        r_thread = Thread(target=read_messages, args=(server,))
+        w_thread = Thread(target=write_messages, args=(server, username))
+        p_thread = Thread(target=presence_sender, args=(server, username))
+
+        r_thread.start()
+        w_thread.start()
+        p_thread.start()
 
 
 if __name__ == '__main__':
